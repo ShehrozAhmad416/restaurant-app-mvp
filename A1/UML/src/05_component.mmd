@@ -1,0 +1,72 @@
+flowchart TB
+  APP["App.js"]:::root
+  subgraph PROV["Context Providers (src/context)"]
+    direction LR
+    TP["ThemeProvider<br/>useTheme()"]
+    AP["AuthProvider<br/>useAuth()"]
+    MP["MenuProvider<br/>useMenu()"]
+    RP["ReservationsProvider<br/>useReservations()"]
+    OP["OrdersProvider<br/>useOrders()"]
+    CP["CartProvider<br/>useCart()"]
+  end
+  subgraph RED["Reducers (src/reducers)"]
+    direction LR
+    CR["cartReducer"]
+    OR["ordersReducer"]
+    MR["menuReducer"]
+    RR["reservationsReducer"]
+  end
+  subgraph HOOKS["Custom hooks (src/hooks)"]
+    direction LR
+    UF["useForm"]
+    UD["useDebounce"]
+    UR["useReservation"]
+    UPR["usePersistedReducer"]
+  end
+  subgraph NAV["Navigation (src/navigation)"]
+    AN["AppNavigator<br/>Root stack + bottom tabs + nested stacks"]
+  end
+  subgraph SCR["Screens (src/screens)"]
+    direction LR
+    LS["LoginScreen"]
+    MS["MenuScreen"]
+    CS["CartScreen"]
+    OSS["OrderSummaryScreen"]
+    OTS["OrderTrackingScreen"]
+    MOS["MyOrdersScreen"]
+    RS["ReservationScreen"]
+    PS["ProfileScreen"]
+    MDS["ManagerDashboardScreen"]
+  end
+  subgraph COMP["Reusable components (src/components)"]
+    direction LR
+    MIC["MenuItemCard (React.memo)"]
+    CIR["CartItemRow"]
+    UI["PrimaryButton · FormField · Chip<br/>SegmentedControl · StepProgress · StatusPill"]
+  end
+  DATA[("Mock data (src/data)<br/>users · categories · menu · tables<br/>reservations · promoCodes")]:::data
+  AS[("AsyncStorage")]:::data
+
+  APP --> PROV --> AN --> SCR
+  CP --> CR
+  OP --> OR
+  MP --> MR
+  RP --> RR
+  OP & MP & RP --> UPR --> AS
+  LS --> UF
+  MDS --> UF
+  MS --> UD
+  RS --> UR --> RP
+  SCR --> COMP
+  MS --> MIC
+  CS --> CIR
+  RED --> DATA
+  AP --> DATA
+  classDef root fill:#0369A1,color:#FFFFFF,stroke:#0369A1
+  classDef data fill:#DCFCE7,stroke:#15803D
+  style PROV fill:#F4FAFF,stroke:#0369A1
+  style RED fill:#F4FAFF,stroke:#0369A1
+  style HOOKS fill:#F0FDF4,stroke:#15803D
+  style NAV fill:#F4FAFF,stroke:#0369A1
+  style SCR fill:#FFFFFF,stroke:#0369A1
+  style COMP fill:#F0FDF4,stroke:#15803D

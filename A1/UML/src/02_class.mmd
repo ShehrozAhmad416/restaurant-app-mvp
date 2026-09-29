@@ -1,0 +1,112 @@
+classDiagram
+  direction TB
+  class User {
+    <<abstract>>
+    +id: string
+    +fullName: string
+    +email: string
+    -password: string
+    +role: Role
+    +login(email: string, password: string) boolean
+    +logout() void
+  }
+  class Customer {
+    +favouriteIds: string[]
+    +placeOrder(cart: Cart, type: OrderType) Order
+    +reserveTable(date: string, slot: string, partySize: number) Reservation
+    +cancelReservation(id: string) void
+  }
+  class Manager {
+    +updateOrderStatus(order: Order, status: OrderStatus) void
+    +respondToReservation(r: Reservation, accept: boolean) void
+    +addMenuItem(item: MenuItem) void
+    +editPrice(item: MenuItem, price: number) void
+    +toggleAvailability(item: MenuItem) void
+  }
+  class Category {
+    +id: string
+    +name: string
+    +sortOrder: number
+  }
+  class MenuItem {
+    +id: string
+    +name: string
+    +description: string
+    +price: number
+    +category: string
+    +image: ImageSource
+    +isSpecial: boolean
+    +isAvailable: boolean
+  }
+  class Cart {
+    +items: CartItem[]
+    +promoCode: string
+    +discountPercent: number
+    +addItem(item: MenuItem) void
+    +removeItem(id: string) void
+    +applyPromo(code: string) boolean
+    +clear() void
+    +getSubtotal() number
+  }
+  class CartItem {
+    +id: string
+    +name: string
+    +price: number
+    +quantity: number
+    +note: string
+    +getLineTotal() number
+  }
+  class Order {
+    +id: string
+    +customerId: string
+    +items: CartItem[]
+    +subtotal: number
+    +serviceCharge: number
+    +salesTax: number
+    +discount: number
+    +total: number
+    +type: OrderType
+    +tableId: string
+    +pickupTime: string
+    +status: OrderStatus
+    +createdAt: number
+    +canTransitionTo(status: OrderStatus) boolean
+  }
+  class Reservation {
+    +id: string
+    +userId: string
+    +date: string
+    +timeSlot: string
+    +partySize: number
+    +phone: string
+    +tableId: string
+    +status: ReservationStatus
+    +cancel() void
+  }
+  class Table {
+    +id: string
+    +seats: number
+    +area: string
+    +isFreeAt(date: string, slot: string) boolean
+  }
+  class OrderStatus {
+    <<enumeration>>
+    Pending
+    Preparing
+    Ready
+    Served
+    Cancelled
+  }
+  User <|-- Customer
+  User <|-- Manager
+  Category "1" -- "1..*" MenuItem : groups
+  Customer "1" *-- "1" Cart : owns
+  Cart "1" *-- "0..*" CartItem : contains
+  CartItem "0..*" --> "1" MenuItem : refers to
+  Customer "1" --> "0..*" Order : places
+  Order "1" *-- "1..*" CartItem : snapshot of
+  Order ..> OrderStatus : uses
+  Customer "1" --> "0..*" Reservation : makes
+  Reservation "0..*" --> "1" Table : books
+  Manager "1" --> "0..*" Order : manages
+  Manager "1" --> "0..*" MenuItem : maintains

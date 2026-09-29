@@ -1,0 +1,42 @@
+flowchart LR
+  C(["👤 Customer"]):::actor
+  M(["👤 Restaurant Manager"]):::actor
+  subgraph SYS["Restaurant App MVP (frontend only)"]
+    direction TB
+    UC1([UC1 Sign Up])
+    UC2([UC2 Log In])
+    UC3([UC3 Browse Menu])
+    UC4([UC4 Search Menu])
+    UC5([UC5 Filter / Sort Menu])
+    UC6([UC6 Mark Favourite])
+    UC7([UC7 Manage Cart])
+    UC8([UC8 Apply Promo Code])
+    UC9([UC9 Place Order])
+    UC10([UC10 Track Order])
+    UC11([UC11 Reserve Table])
+    UC12([UC12 Cancel Reservation])
+    UC13([UC13 Toggle Dark Mode])
+    UC14([UC14 Log Out])
+    UC15([UC15 Update Order Status])
+    UC16([UC16 Accept / Decline Reservation])
+    UC17([UC17 Add Menu Item])
+    UC18([UC18 Edit Item Price])
+    UC19([UC19 Toggle Item Availability])
+    INC1([Validate Credentials]):::inc
+    INC2([Calculate Totals]):::inc
+    INC3([Check Table Availability]):::inc
+  end
+  C --- UC1 & UC2 & UC3 & UC7 & UC9 & UC10 & UC11 & UC12 & UC13 & UC14
+  M --- UC2 & UC15 & UC16 & UC17 & UC18 & UC19 & UC13 & UC14
+  UC2 -. "«include»" .-> INC1
+  UC1 -. "«include»" .-> INC1
+  UC9 -. "«include»" .-> INC2
+  UC9 -. "«include»" .-> UC8
+  UC11 -. "«include»" .-> INC3
+  UC4 -. "«extend»" .-> UC3
+  UC5 -. "«extend»" .-> UC3
+  UC6 -. "«extend»" .-> UC3
+  UC12 -. "«extend»" .-> UC11
+  classDef actor fill:#FFFFFF,stroke:#0369A1,stroke-width:2px,font-weight:bold
+  classDef inc fill:#DCFCE7,stroke:#15803D
+  style SYS fill:#F4FAFF,stroke:#0369A1,stroke-width:2px

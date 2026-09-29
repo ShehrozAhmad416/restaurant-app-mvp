@@ -1,0 +1,41 @@
+sequenceDiagram
+  autonumber
+  actor Customer
+  participant Menu as MenuScreen
+  participant Card as MenuItemCard
+  participant CartCtx as CartContext (cartReducer)
+  participant CartS as CartScreen
+  participant Sum as OrderSummaryScreen
+  participant OrdCtx as OrdersContext (ordersReducer)
+  participant Store as AsyncStorage
+  participant Track as OrderTrackingScreen
+
+  Customer->>Card: Tap "Add to Cart"
+  Card->>Menu: onAddToCart(item) [useCallback]
+  Menu->>CartCtx: dispatch(ADD_ITEM, item)
+  CartCtx-->>Menu: new state (items, itemCount)
+  Note over Menu,CartCtx: Cart tab badge updates
+  Customer->>CartS: Open Cart tab
+  CartS->>CartCtx: dispatch(INCREMENT / UPDATE_NOTE)
+  Customer->>CartS: Enter "FEAST20", tap Apply
+  CartS->>CartS: isValidPromoCode(code)
+  alt code valid
+    CartS->>CartCtx: dispatch(APPLY_PROMO)
+  else code invalid
+    CartS-->>Customer: Show error message
+  end
+  Customer->>CartS: Tap "Review order"
+  CartS->>Sum: navigate("OrderSummary")
+  Sum->>Sum: useMemo(calculateTotals(items, discount))
+  Customer->>Sum: Choose Dine-in + table (useState)
+  Customer->>Sum: Tap "Place order"
+  Sum->>OrdCtx: dispatch(PLACE_ORDER, order{status: Pending})
+  OrdCtx->>Store: setItem("@restaurant/orders") [useEffect]
+  Sum->>CartCtx: dispatch(CLEAR_CART)
+  Sum->>Track: navigate("OrdersTab" › "OrderTracking", orderId)
+  loop every 1 s (setInterval in useEffect)
+    Track->>Track: update elapsed time
+    Track->>OrdCtx: dispatch(UPDATE_STATUS) at 10 s / 20 s / 30 s
+    OrdCtx-->>Track: status Preparing → Ready → Served
+  end
+  Track-->>Customer: Step progress + status shown

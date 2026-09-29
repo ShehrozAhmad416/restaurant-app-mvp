@@ -1,0 +1,15 @@
+stateDiagram-v2
+  direction LR
+  [*] --> Pending : placeOrder() / order created
+  Pending --> Preparing : 10 s elapsed OR manager "Mark Preparing"
+  Preparing --> Ready : 20 s elapsed OR manager "Mark Ready"
+  Ready --> Served : 30 s elapsed OR manager "Mark Served"
+  Pending --> Cancelled : manager "Cancel"
+  Preparing --> Cancelled : manager "Cancel"
+  Served --> [*]
+  Cancelled --> [*]
+  note right of Pending
+    Timers stop once a manager
+    changes status manually
+    (manualOverride = true)
+  end note
